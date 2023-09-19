@@ -6,11 +6,13 @@ float ypos;
 void setup() {
   size(1000,1000);
   background(0);
-  fill(0,100);
 }
 void draw() {
   noStroke();
+  fill(0,100);
   quad(0,0,0,1000,1000,1000,1000,0);
+  fill(onColor());
+  quad(1000,0,1000,30,970,30,970,0);
   float x1 = xpos;
   float y1 = ypos;
   float x2 = mouseX;
@@ -71,6 +73,11 @@ void calcLightning(float x1,float y1,float x2,float y2) {
     }
     offsetAmt /= 3.0;
   }
+}
+
+color onColor() {
+  if (doLightning) return #00FF00;
+  else return #FF0000;
 }
 
 class Segment {
