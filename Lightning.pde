@@ -1,33 +1,37 @@
 ArrayList<Segment> segmentList = new ArrayList<Segment>();
 ArrayList<Bolt> boltList = new ArrayList<Bolt>();
-boolean doLightning = false;
-float xpos;
-float ypos;
+ArrayList<Conductor> conductorList = new ArrayList<Conductor>();
 
 void setup() {
   size(1000,1000);
   background(0);
+  conductorList.add(new Conductor(0.0,0.0));
+  conductorList.add(new Conductor(1.0,1.0));
 }
 void draw() {
   noStroke();
   fill(0,100);
   quad(0,0,0,1000,1000,1000,1000,0);
-  fill(onColor());
-  quad(1000,0,1000,30,970,30,970,0);
-  boltList.add(new Bolt(xpos,ypos,mouseX,mouseY));
-  if (doLightning) drawLightning();
-  System.out.println(boltList.size());
+  boltList.clear();
+  for (int cond = 1; cond < conductorList.size(); cond++) {
+    //adds a bolt between each conductor
+    Conductor c1 = conductorList.get(cond-1);
+    Conductor c2 = conductorList.get(cond);
+    boltList.add(new Bolt(c1.x, c1.y, c2.x, c2.y));
+    boltList.add(new Bolt(c1.x, c1.y, c2.x, c2.y));
+  }
+  drawLightning();
 }
 void mousePressed() {
-  //left click toggles lightning
+  //left click resets
   if (mouseButton == 37) {
-    doLightning = !doLightning;
-    //drawLightning(xpos,ypos,mouseX,mouseY);
+    conductorList.clear();
+    conductorList.add(new Conductor(0.0,0.0));
+    conductorList.add(new Conductor(1.0,1.0));
   }
-  //right click moves set point
+  //right click adds point
   else if (mouseButton == 39) {
-    xpos = mouseX;
-    ypos = mouseY;
+    conductorList.add(new Conductor(mouseX,mouseY));
   }
 }
 
@@ -35,11 +39,13 @@ void drawLightning() {
   for (int bolt = 0; bolt < boltList.size(); bolt++) {
     Bolt b = boltList.get(bolt);
     calcLightning(b.xstart,b.ystart,b.xend,b.yend);
+    //calculate lightning segments for each bolt
     for (int seg = 0; seg < segmentList.size(); seg++) {
       Segment s = segmentList.get(seg);
       stroke(s.bright);
-      strokeWeight(lightningWeight(s.bright));
+      strokeWeight(s.wide);
       line(s.xstart,s.ystart,s.xend,s.yend);
+      //draw lines for each segment
     }
   }
 }
@@ -47,6 +53,7 @@ void drawLightning() {
 void bolt(float x1,float y1,float x2,float y2) {
   if (boltList.size() > 0) boltList.remove(0);
   boltList.add(new Bolt(x1,y1,x2,y2));
+  //replaces old bolts with new bolts
 }
 
 void calcLightning(float x1,float y1,float x2,float y2) {
@@ -56,7 +63,7 @@ void calcLightning(float x1,float y1,float x2,float y2) {
   //sets lightning params
   
   segmentList.clear();
-  segmentList.add(new Segment(x1,y1,x2,y2,255));
+  segmentList.add(new Segment(x1,y1,x2,y2,2,255));
   //resets segment list and adds new segment from start to end point
   
   for (int gen = 0; gen < numGen; gen++) {
@@ -74,8 +81,8 @@ void calcLightning(float x1,float y1,float x2,float y2) {
       ymidpoint += ymidptOffset;
       //calculate new midpoint
       
-      Segment s1 = new Segment(s.xstart, s.ystart, xmidpoint, ymidpoint, s.bright);
-      Segment s2 = new Segment(xmidpoint, ymidpoint, s.xend, s.yend, s.bright);
+      Segment s1 = new Segment(s.xstart, s.ystart, xmidpoint, ymidpoint, s.wide, s.bright);
+      Segment s2 = new Segment(xmidpoint, ymidpoint, s.xend, s.yend, s.wide, s.bright);
       segmentList.add(s1);
       segmentList.add(s2);
       //adds 2 new segments btwn old endpoints and new midpoint
@@ -86,7 +93,7 @@ void calcLightning(float x1,float y1,float x2,float y2) {
         float ysplitOffset = (float)(offsetAmt*Math.random())-offsetAmt/2.0;
         float xsplit = xmidpoint+splitLen*(xmidpoint-s.xstart)+xsplitOffset;
         float ysplit = ymidpoint+splitLen*(ymidpoint-s.ystart)+ysplitOffset;
-        Segment sP = new Segment(xmidpoint,ymidpoint,xsplit,ysplit, 200);
+        Segment sP = new Segment(xmidpoint,ymidpoint,xsplit,ysplit, 1, #A5D2E3);
         segmentList.add(sP);
       }
     }
@@ -94,27 +101,19 @@ void calcLightning(float x1,float y1,float x2,float y2) {
   }
 }
 
-int lightningWeight(int stroke) {
-  if (stroke >=250) return 3;
-  else return 1;
-}
-
-color onColor() {
-  if (doLightning) return #00FF00;
-  else return #FF0000;
-}
-
 class Segment {
   float xstart = 0;
   float ystart = 0;
   float xend = 0;
   float yend = 0;
-  int bright = 255;
-  Segment(float x1, float y1, float x2, float y2, int b) {
+  int wide = 2;
+  color bright = #C1EEFF;
+  Segment(float x1, float y1, float x2, float y2, int w, color b) {
     xstart = x1;
     ystart = y1;
     xend = x2;
     yend = y2;
+    wide = w;
     bright = b;
   }
 }
@@ -129,5 +128,14 @@ class Bolt {
     ystart = y1;
     xend = x2;
     yend = y2;
+  }
+}
+
+class Conductor {
+  float x = 0;
+  float y = 0;
+  Conductor(float xpo, float ypo) {
+    x = xpo;
+    y = ypo;
   }
 }
