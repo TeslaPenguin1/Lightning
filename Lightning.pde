@@ -5,8 +5,7 @@ ArrayList<Conductor> conductorList = new ArrayList<Conductor>();
 void setup() {
   size(1000,1000);
   background(0);
-  conductorList.add(new Conductor(0.0,0.0));
-  conductorList.add(new Conductor(1.0,1.0));
+  conductorList.add(new Conductor(0.0,1000.0));
 }
 void draw() {
   noStroke();
@@ -19,15 +18,29 @@ void draw() {
     Conductor c2 = conductorList.get(cond);
     boltList.add(new Bolt(c1.x, c1.y, c2.x, c2.y));
     boltList.add(new Bolt(c1.x, c1.y, c2.x, c2.y));
+    noStroke();
+    fill(100);
+    ellipse(c2.x,c2.y,27.5,27.5);
+    fill(#086183);
+    ellipse(c2.x,c2.y,25,25);
+    fill(150);
+    ellipse(c2.x,c2.y,20,20);
+    fill(#086183);
+    ellipse(c2.x,c2.y,15,15);
   }
   drawLightning();
+  for (int cond = 1; cond < conductorList.size(); cond++) {
+    Conductor c = conductorList.get(cond);
+    noStroke();
+    fill(200);
+    ellipse(c.x,c.y,10,10);
+  }
 }
 void mousePressed() {
   //left click resets
   if (mouseButton == 37) {
     conductorList.clear();
-    conductorList.add(new Conductor(0.0,0.0));
-    conductorList.add(new Conductor(1.0,1.0));
+    conductorList.add(new Conductor(0.0,1000.0));
   }
   //right click adds point
   else if (mouseButton == 39) {
@@ -71,15 +84,16 @@ void calcLightning(float x1,float y1,float x2,float y2) {
     
     for(int segment = 0; segment < size; segment++) {
       Segment s = segmentList.get(0);
-      segmentList.remove(0); //this segment isnt needed anymore
+      segmentList.remove(0);
       
       float xmidpoint = (s.xstart+s.xend)/2.0;
       float ymidpoint = (s.ystart+s.yend)/2.0;
+      //calc midpoint of segment
       float xmidptOffset = (float)(offsetAmt*Math.random())-offsetAmt/2.0;
       float ymidptOffset = (float)(offsetAmt*Math.random())-offsetAmt/2.0;
+      //calc random offset to midpoint
       xmidpoint += xmidptOffset;
       ymidpoint += ymidptOffset;
-      //calculate new midpoint
       
       Segment s1 = new Segment(s.xstart, s.ystart, xmidpoint, ymidpoint, s.wide, s.bright);
       Segment s2 = new Segment(xmidpoint, ymidpoint, s.xend, s.yend, s.wide, s.bright);
@@ -91,8 +105,10 @@ void calcLightning(float x1,float y1,float x2,float y2) {
       if (Math.random() > 0.65 && gen < 3) {
         float xsplitOffset = (float)(offsetAmt*Math.random())-offsetAmt/2.0;
         float ysplitOffset = (float)(offsetAmt*Math.random())-offsetAmt/2.0;
+        //calculates diff btwn midpoint and start point
         float xsplit = xmidpoint+splitLen*(xmidpoint-s.xstart)+xsplitOffset;
         float ysplit = ymidpoint+splitLen*(ymidpoint-s.ystart)+ysplitOffset;
+        //calculates new split point position
         Segment sP = new Segment(xmidpoint,ymidpoint,xsplit,ysplit, 1, #A5D2E3);
         segmentList.add(sP);
       }
