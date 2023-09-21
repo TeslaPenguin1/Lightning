@@ -5,7 +5,7 @@ ArrayList<Conductor> conductorList = new ArrayList<Conductor>();
 void setup() {
   size(1000,1000);
   background(0);
-  conductorList.add(new Conductor(0.0,1000.0));
+  conductorList.add(new Conductor(500.0,0.0));
 }
 void draw() {
   noStroke();
@@ -19,28 +19,30 @@ void draw() {
     boltList.add(new Bolt(c1.x, c1.y, c2.x, c2.y));
     boltList.add(new Bolt(c1.x, c1.y, c2.x, c2.y));
     noStroke();
-    fill(100);
-    ellipse(c2.x,c2.y,27.5,27.5);
-    fill(#086183);
-    ellipse(c2.x,c2.y,25,25);
-    fill(150);
-    ellipse(c2.x,c2.y,20,20);
-    fill(#086183);
-    ellipse(c2.x,c2.y,15,15);
+    fill(50+c2.y/10);
+    quad(c2.x-5,c2.y,c2.x+5,c2.y,c2.x+5,height,c2.x-5,height);
   }
   drawLightning();
   for (int cond = 1; cond < conductorList.size(); cond++) {
     Conductor c = conductorList.get(cond);
     noStroke();
     fill(200);
-    ellipse(c.x,c.y,10,10);
+    ellipse(c.x,c.y,15,12.5);
+    fill(190);
+    quad(c.x+10,c.y+10,c.x+10,c.y+15,c.x-10,c.y+15,c.x-10,c.y+10);
+    arc(c.x+10,c.y+12.5,20,5,-PI/2,PI/2);
+    arc(c.x-10,c.y+12.5,20,5,PI/2,3*PI/2);
+    fill(180);
+    quad(c.x+15,c.y+20,c.x+15,c.y+25,c.x-15,c.y+25,c.x-15,c.y+20);
+    arc(c.x+15,c.y+22.5,20,5,-PI/2,PI/2);
+    arc(c.x-15,c.y+22.5,20,5,PI/2,3*PI/2);
   }
 }
 void mousePressed() {
   //left click resets
   if (mouseButton == 37) {
     conductorList.clear();
-    conductorList.add(new Conductor(0.0,1000.0));
+    conductorList.add(new Conductor(500.0,0.0));
   }
   //right click adds point
   else if (mouseButton == 39) {
