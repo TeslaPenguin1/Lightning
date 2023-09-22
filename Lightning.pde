@@ -1,6 +1,8 @@
 ArrayList<Segment> segmentList = new ArrayList<Segment>();
 ArrayList<Bolt> boltList = new ArrayList<Bolt>();
 ArrayList<Conductor> conductorList = new ArrayList<Conductor>();
+ArrayList<Conductor> pylonList = new ArrayList<Conductor>();
+float[] condPos;
 
 void setup() {
   size(1000,1000);
@@ -12,22 +14,46 @@ void draw() {
   fill(0,100);
   quad(0,0,0,1000,1000,1000,1000,0);
   boltList.clear();
+  pylonList.clear();
+  
+  /***
+  Creates arraylist of conductors sorted by y value.
+  First, an array of conductor y positions is made and sorted.
+  Then, each value of the sorted array is compared (in order) to the y values of the conductors.
+  Once the correct conductor is found, it adds its x and y positions to the new arrayList.
+  ***/
+  float [] condPos = new float[conductorList.size()];
+  for (int cond = 1; cond < conductorList.size(); cond++) {
+    Conductor c = conductorList.get(cond);
+    condPos[cond] = c.y;
+  }
+  float[] ys = sort(condPos);
+  for (int i = 0; i < condPos.length; i++) {
+    for(int cond = 1; cond < conductorList.size(); cond++) {
+      Conductor c = conductorList.get(cond);
+      if (ys[i] == c.y) pylonList.add(new Conductor(c.x,c.y));
+    }
+  }
+  
+  //draws pylons for tesla coils
+  for (int pt = 0; pt < pylonList.size(); pt++) {
+    Conductor c = pylonList.get(pt);
+    noStroke();
+    fill(50+c.y/10);
+    quad(c.x-5,c.y,c.x+5,c.y,c.x+5,height,c.x-5,height);
+  }
+  
   for (int cond = 1; cond < conductorList.size(); cond++) {
     //adds a bolt between each conductor
     Conductor c1 = conductorList.get(cond-1);
     Conductor c2 = conductorList.get(cond);
     boltList.add(new Bolt(c1.x, c1.y, c2.x, c2.y));
     boltList.add(new Bolt(c1.x, c1.y, c2.x, c2.y));
-    noStroke();
-    fill(50+c2.y/10);
-    quad(c2.x-5,c2.y,c2.x+5,c2.y,c2.x+5,height,c2.x-5,height);
   }
-  drawLightning();
+  //draws most of coil behind lightning
   for (int cond = 1; cond < conductorList.size(); cond++) {
     Conductor c = conductorList.get(cond);
     noStroke();
-    fill(200);
-    ellipse(c.x,c.y,15,12.5);
     fill(190);
     quad(c.x+10,c.y+10,c.x+10,c.y+15,c.x-10,c.y+15,c.x-10,c.y+10);
     arc(c.x+10,c.y+12.5,20,5,-PI/2,PI/2);
@@ -36,6 +62,14 @@ void draw() {
     quad(c.x+15,c.y+20,c.x+15,c.y+25,c.x-15,c.y+25,c.x-15,c.y+20);
     arc(c.x+15,c.y+22.5,20,5,-PI/2,PI/2);
     arc(c.x-15,c.y+22.5,20,5,PI/2,3*PI/2);
+  }
+  drawLightning();
+  //draws top ball of coil above lightning
+  for (int cond = 1; cond < conductorList.size(); cond++) {
+    Conductor c = conductorList.get(cond);
+    noStroke();
+    fill(200);
+    ellipse(c.x,c.y,15,12.5);
   }
 }
 void mousePressed() {
