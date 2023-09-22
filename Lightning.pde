@@ -7,14 +7,25 @@ float[] condPos;
 void setup() {
   size(1000,1000);
   background(0);
-  conductorList.add(new Conductor(500.0,0.0));
+  conductorList.add(new Conductor(500.0,30.0));
 }
 void draw() {
   noStroke();
-  fill(0,100);
+  fill(0,90);
   quad(0,0,0,1000,1000,1000,1000,0);
   boltList.clear();
   pylonList.clear();
+  
+  fill(50);
+  quad(490,30,510,30,510,1000,490,1000);
+  fill(190);
+  quad(530,65,530,80,470,80,470,65);
+  arc(530,72.5,60,15,-PI/2,PI/2);
+  arc(470,72.5,60,15,PI/2,3*PI/2);
+  fill(180);
+  quad(545,90,545,105,455,105,455,90);
+  arc(545,97.5,60,15,-PI/2,PI/2);
+  arc(455,97.5,60,15,PI/2,3*PI/2);
   
   /***
   Creates arraylist of conductors sorted by y value.
@@ -53,7 +64,6 @@ void draw() {
   //draws most of coil behind lightning
   for (int cond = 1; cond < conductorList.size(); cond++) {
     Conductor c = conductorList.get(cond);
-    noStroke();
     fill(190);
     quad(c.x+10,c.y+10,c.x+10,c.y+15,c.x-10,c.y+15,c.x-10,c.y+10);
     arc(c.x+10,c.y+12.5,20,5,-PI/2,PI/2);
@@ -65,9 +75,11 @@ void draw() {
   }
   drawLightning();
   //draws top ball of coil above lightning
+  fill(200);
+  ellipse(500,30,60,50);
   for (int cond = 1; cond < conductorList.size(); cond++) {
     Conductor c = conductorList.get(cond);
-    noStroke();
+    strokeWeight(1);
     fill(200);
     ellipse(c.x,c.y,15,12.5);
   }
@@ -76,7 +88,7 @@ void mousePressed() {
   //left click resets
   if (mouseButton == 37) {
     conductorList.clear();
-    conductorList.add(new Conductor(500.0,0.0));
+    conductorList.add(new Conductor(500.0,30.0));
   }
   //right click adds point
   else if (mouseButton == 39) {
