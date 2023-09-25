@@ -18,14 +18,6 @@ void draw() {
   
   fill(50);
   quad(490,30,510,30,510,1000,490,1000);
-  fill(190);
-  quad(530,65,530,80,470,80,470,65);
-  arc(530,72.5,60,15,-PI/2,PI/2);
-  arc(470,72.5,60,15,PI/2,3*PI/2);
-  fill(180);
-  quad(545,90,545,105,455,105,455,90);
-  arc(545,97.5,60,15,-PI/2,PI/2);
-  arc(455,97.5,60,15,PI/2,3*PI/2);
   
   /***
   Creates arraylist of conductors sorted by y value.
@@ -61,6 +53,17 @@ void draw() {
     boltList.add(new Bolt(c1.x, c1.y, c2.x, c2.y));
     boltList.add(new Bolt(c1.x, c1.y, c2.x, c2.y));
   }
+  
+  
+  fill(190);
+  quad(530,65,530,80,470,80,470,65);
+  arc(530,72.5,60,15,-PI/2,PI/2);
+  arc(470,72.5,60,15,PI/2,3*PI/2);
+  fill(180);
+  quad(545,90,545,105,455,105,455,90);
+  arc(545,97.5,60,15,-PI/2,PI/2);
+  arc(455,97.5,60,15,PI/2,3*PI/2);
+  
   //draws most of coil behind lightning
   for (int cond = 1; cond < conductorList.size(); cond++) {
     Conductor c = conductorList.get(cond);
@@ -103,9 +106,7 @@ void drawLightning() {
     //calculate lightning segments for each bolt
     for (int seg = 0; seg < segmentList.size(); seg++) {
       Segment s = segmentList.get(seg);
-      stroke(s.bright);
-      strokeWeight(s.wide);
-      line(s.xstart,s.ystart,s.xend,s.yend);
+      s.drawSeg();
       //draw lines for each segment
     }
   }
@@ -180,6 +181,11 @@ class Segment {
     wide = w;
     bright = b;
   }
+  void drawSeg() {
+    stroke(bright);
+    strokeWeight(wide);
+    line(xstart,ystart,xend,yend);
+  }
 }
 
 class Bolt {
@@ -192,7 +198,7 @@ class Bolt {
     ystart = y1;
     xend = x2;
     yend = y2;
-  }
+  } 
 }
 
 class Conductor {
